@@ -1,96 +1,33 @@
-# NewsReader Starter App
+# NewsReader — Assignment 9
 
-⚠️ **IMPORTANT: This is intentionally insecure starter code!**
+React Context authentication demonstration with regular/admin roles, guarded saved/admin routes, and per-username bookmarks. Based on the RizeComputerScience/COMPSX-NewsReader template.
 
-This application has several security issues that you will need to fix as part of your assignment:
+## Run
 
-## Security Issues to Address
+Requires Node 20.19+ or 22.12+.
 
-1. **No Authentication**: Anyone can access all features without logging in
-2. **Shared State**: All users share the same saved articles (no user-specific data)
-3. **No Protected Routes**: The "Saved Articles" page should require authentication
-4. **No Role-Based Access**: There's no concept of different user types (regular vs premium)
+1. Run `npm ci`.
+2. Copy `.env.example` to `.env` and set your own NY Times API key. Enable Top Stories and Article Search for that key.
+3. Run `npm run dev`. Use any nonempty demo username/password and select Regular or Admin.
+4. Run `npm run lint` and `npm run build` to validate.
 
-## Getting Started
+## Verify behavior
 
-### Prerequisites
-- Node.js (v18 or higher)
-- A NY Times API key (get one free at https://developer.nytimes.com/)
+- Open `/saved` while logged out: redirects to login.
+- Log in as Alice (regular), save an article, and log out.
+- Log in as Bob (regular): Alice's bookmarks are absent. Save a different article.
+- Log in as Alice again without refreshing: her bookmarks remain in this session.
+- Regular users have no Admin link; opening `/admin` redirects home.
+- Log in with the admin demo role: the Admin page displays the saved articles grouped by username.
+- Duplicate bookmarks are ignored; removing one user's bookmark does not change another user's articles.
+- Logout removes the current authenticated user. A full refresh resets all demo state.
 
-### Getting Your NY Times API Key
+## Deployment
 
-1. Visit https://developer.nytimes.com/ and create a free account
-2. After logging in, click on your email address in the top right corner
-3. Click "Apps" to go to your apps page
-4. Click "New App" button
-5. Give your app a name (e.g., "NewsReader App")
-6. **Important**: Enable these two APIs:
-   - ✅ **Top Stories API**
-   - ✅ **Article Search API**
-7. Click "Save" to generate your API key
+Import this repository into Vercel using the Vite preset. Add `VITE_NY_TIMES_API_KEY` to the environment variables before deploying. The included rewrite supports direct links to SPA routes. Redeploy when the environment variable changes.
 
-### Installation
+## Security scope
 
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+This is the frontend-only simulation requested by the course, not production authentication. Users select their demo role and all state lives in browser memory. Real authentication, role assignment, and per-user authorization must be enforced on a server. Do not enter real passwords or store private data here.
 
-3. Add your NY Times API key to `src/services/api.js`:
-   ```javascript
-   const NY_TIMES_API_KEY = 'your-actual-api-key-here';
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Open your browser to `http://localhost:5173`
-
-## Project Structure
-
-```
-news-reader-starter/
-├── src/
-│   ├── components/
-│   │   ├── ArticleCard.jsx
-│   │   ├── Layout.jsx
-│   │   ├── Login.css
-│   │   ├── Login.jsx
-│   │   └── Navigation.jsx
-│   ├── context/
-│   │   └── ArticlesContext.jsx
-│   ├── pages/
-│   │   ├── HomePage.jsx
-│   │   ├── SearchPage.jsx
-│   │   └── SavedArticlesPage.jsx
-│   ├── services/
-│   │   └── api.js
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── package.json
-└── vite.config.js
-```
-
-## Features (Current)
-
-- Browse NY Times top stories
-- Search for articles by keyword
-- Bookmark articles (shared by all users - this needs to be fixed!)
-- Responsive design
-
-## Your Assignment
-
-You will need to:
-1. Implement user authentication (login/logout)
-2. Create protected routes that require authentication
-3. Make saved articles user-specific
-4. Add role-based access control (regular vs premium users)
-5. Secure the API key using environment variables
-6. Deploy the application to Vercel
-
-Good luck!
+`.env` files are excluded from git. A Vite variable beginning with `VITE_` is embedded in the client bundle and is visible to browser users; environment configuration avoids committing the key, but does not make it secret. A real secret API key belongs behind a server-side proxy. React renders article text without raw HTML, external links use `noopener noreferrer`, and search terms are URL encoded.
